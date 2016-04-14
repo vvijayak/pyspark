@@ -11,13 +11,13 @@ def word_count(text_file_rdd):
     words = text_file_rdd.flatMap(lambda word: word.split())
     return words.count()
 
-def word_histogram(text_file_rdd, wc):
+def word_histogram(text_file_rdd, wc, f):
     words_hist = text_file_rdd.flatMap(lambda word: word.split()) \
         .map(lambda word: (word, 1)) \
         .reduceByKey(lambda a, b:a + b)\
         .sortBy(lambda (word, count): count)
     for word in words_hist.collect():
-        print '%s : %s (%.4s)' % (word[0], word[1], float(word[1])/float(wc)*100)
+        f.write('%s : %s (%.4s)\n' % (word[0], word[1], float(word[1])/float(wc)*100))
 
 def main():
     file_name = argv[1]
@@ -28,9 +28,11 @@ def main():
         text_file_rdd = sc.textFile(file_name)
         logging.info('Loaded '+file_name+' into RDD')
 
-        wc = word_count(text_file_rdd)
-        word_histogram(text_file_rdd, wc)
-        print 'Word Count: %s' % wc
+        f = open('word_count.out', 'w')
+        wc = word_count(text_file_rdd,)
+        word_histogram(text_file_rdd, wc,f)
+        f.write('Word Count: %s' % wc)
+        f.close()
 
     else:
         logging.error('File not found...')
