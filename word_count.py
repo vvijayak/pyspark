@@ -1,11 +1,9 @@
 #!/usr/bin/python
-import logging
+from pyspark import SparkConf, SparkContext
 from logging.config import fileConfig
 from sys import argv
 import os.path
-from pyspark import SparkConf, SparkContext
-
-
+import logging
 
 def word_count(text_file_rdd):
     words = text_file_rdd.flatMap(lambda word: word.split())
@@ -34,8 +32,7 @@ def main():
         f.write('Word Count: %s' % wc)
         f.close()
 
-    else:
-        logging.error('File not found...')
+    else: logging.error('Text file not found...')
 
 if __name__ == '__main__':
     fileConfig('config/logging.ini')
